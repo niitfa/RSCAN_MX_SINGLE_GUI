@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/button_icon_start.png</file>
+        <file>img/button_icon_pause.png</file>
+        <file>img/button_icon_connect.png</file>
+	<file>img/button_icon_settings.png</file>
+	<file>img/button_icon_save.png</file>
+	<file>img/button_icon_reset.png</file>
+	<file>img/button_icon_stop.png</file>
+	<file>img/icon_activity.png</file>
+	<file>img/icon_voltage.png</file>
+	<file>img/icon_polarity.png</file>
+	<file>img/icon_plus_bright.png</file>
+	<file>img/icon_plus_dark.png</file>
+	<file>img/icon_minus_bright.png</file>
+	<file>img/icon_minus_dark.png</file>
+	<file>img/icon_sensivity.png</file>
+	<file>img/icon_file.png</file>
+	<file>img/icon_rwell.png</file>
+    </qresource>
+</RCC>
