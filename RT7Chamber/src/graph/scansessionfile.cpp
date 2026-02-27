@@ -9,13 +9,17 @@ ScanSessionFile::ScanSessionFile()
 {
 }
 
+ScanSessionFile::~ScanSessionFile()
+{
+}
+
 bool ScanSessionFile::start()
 {
     // create filepath
     this->filepath = this->getFolderPath();
 
     // open file, check if opened
-    QString fname = "session.csv";
+    QString fname = this->filename;
 
     // check dir existing
     QDir dir;
@@ -26,46 +30,18 @@ bool ScanSessionFile::start()
     file = new QFile(this->filepath + fname);
     if(file->open(QIODevice::ReadWrite))
     {
-        QTextStream stream(file);
-        //std::cout << "opened\n";
+        printHeadText(file);
+        printValuesDescription(this->file);
         return true;
     }
-    //std::cout << "error opening\n";
     return false;
 }
 
-void ScanSessionFile::update(QVector<int> data)
+void ScanSessionFile::update()
 {
     if(this->file)
     {
-        if(!data.empty())
-        {
-            // common file
-            QTextStream stream(this->file);
-            for(auto val : data)
-            {
-                stream << val << ",";
-            }
-            stream << endl;
-
-            // single file
-            QDir pointsDir;
-            QString pointsFilePath = this->filepath + "points/";
-            if(!pointsDir.exists(pointsFilePath))
-                pointsDir.mkpath(pointsFilePath);
-
-            QFile pointFile(pointsFilePath + QString::number(data[0]) + ".csv");
-            if(pointFile.open(QIODevice::ReadWrite))
-            {
-                QTextStream pointStream(&pointFile);
-                for(auto val : data)
-                {
-                    pointStream << val << ",";
-                }
-                stream << endl;
-                pointFile.close();
-            }
-        }
+        printReqularData(this->file);
     }
 }
 
@@ -77,13 +53,68 @@ void ScanSessionFile::stop()
     this->file = nullptr;
 }
 
+void ScanSessionFile::setFilename(QString filename)
+{
+    this->filename = filename;
+}
+
+void ScanSessionFile::setBqPerCount(double BqPerCount)
+{
+    this->BqPerCount = BqPerCount;
+}
+
+void ScanSessionFile::setNoiseMBq(double noiseMBq)
+{
+    this->noiseMBq = noiseMBq;
+}
+
+void ScanSessionFile::setID(int id)
+{
+    this->id = id;
+}
+
+void ScanSessionFile::setRawActivityCount(int cnt)
+{
+    this->rawActivityCount = cnt;
+}
+
+void ScanSessionFile::setRawActivityMBq(double MBq)
+{
+    this->rawActivityMBq = MBq;
+}
+
+void ScanSessionFile::setNoiselessActivityMBq(double MBq)
+{
+    this->noiselessActivityMBq = MBq;
+}
+
+void ScanSessionFile::setSensitivity(uint8_t sensitivity)
+{
+    this->sensitivity = sensitivity;
+}
+
+void ScanSessionFile::setVoltage(uint16_t voltage)
+{
+    this->voltage = voltage;
+}
+
+void ScanSessionFile::setVoltagePolarity(uint8_t polarity)
+{
+    this->voltagePolarity = polarity;
+}
+
+void ScanSessionFile::setPressure(double pressureAt)
+{
+    this->pressureAt = pressureAt;
+}
 
 // private
 QString ScanSessionFile::getFolderPath()
 {
     QString path = QDir::currentPath();
     //while(!path.endsWith('/')) { path.chop(1); }
-    path += "/RSCAN_MX_V2_SESSIONS/" + this->createCurrentTimeStr() + "/";
+    //path += "/RWELL_SESSIONS/" + this->createCurrentTimeStr() + "/";
+    path += "/RWELL_SESSIONS/" + this->createCurrentTimeStr() + "/";
     return path;
 }
 
@@ -128,4 +159,78 @@ QString ScanSessionFile::QStringFromInt(int num, int numMinimumLength)
         return res;
     }
     return QString::number(num);
+}
+
+void ScanSessionFile::printHeadText(QFile* f)
+{
+    QTextStream stream(f);
+    stream << "Date," <<  getDateStringFile() << endl;
+    stream << "Time," <<  getTimeStringFile() << endl;
+    stream << "Background (MBq)," <<  QString::number(noiseMBq) << endl;
+    stream << "Voltage (V)," <<  QString::number(voltage) << endl;
+    stream << "Polarity," <<  (voltagePolarity ? "+" : "-") << endl;
+    stream << "Sensitivity," <<  (sensitivity ? "low" : "high") << endl;
+    stream << endl;
+
+}
+
+void ScanSessionFile::printValuesDescription(QFile *f)
+{
+    QTextStream stream(f);
+    stream <<
+            "Time," <<
+            "Date," <<
+            "ID," <<
+            "Activity (count)," <<
+            "Activity (MBq)," <<
+            "Activity no BG (MBq)," <<
+            "Voltage (V)," <<
+            "Pressure (at)," <<
+            "Polarity," <<
+            "Sensitivity" << endl;
+}
+
+void ScanSessionFile::printReqularData(QFile *f)
+{
+    QTextStream stream(f);
+    // заполнение строки
+    stream <<
+              getTimeStringFile() << "," <<
+              getDateStringFile() << "," <<
+              QString::number(id) << "," <<
+              QString::number(rawActivityCount) << "," <<
+              QString::number(rawActivityMBq, 'f', 2) << "," <<
+              QString::number(noiselessActivityMBq, 'f', 2) << "," <<
+              QString::number(voltage) << "," <<
+              QString::number(pressureAt, 'f', 2) << "," <<
+              (voltagePolarity ? "+" : "-") << "," <<
+              (sensitivity ? "low" : "high") << endl;
+}
+
+QString ScanSessionFile::getTimeStringFile()
+{
+    QTime time = QTime::currentTime();
+
+    QString str;
+    str += this->QStringFromInt(time.hour(), 2);
+    str += ":";
+    str += this->QStringFromInt(time.minute(), 2);
+    str += ":";
+    str += this->QStringFromInt(time.second(), 2);
+    str += ".";
+    str += this->QStringFromInt(time.msec(), 3);
+    return str;
+}
+
+QString ScanSessionFile::getDateStringFile()
+{
+    QDate date = QDate::currentDate();
+
+    QString str;
+    str += this->QStringFromInt(date.day(), 2);
+    str += ".";
+    str += this->QStringFromInt(date.month(), 2);
+    str += ".";
+    str += this->QStringFromInt(date.year(), 4);
+    return str;
 }

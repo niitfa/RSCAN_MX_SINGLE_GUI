@@ -33,9 +33,6 @@ ChamberWindow::ChamberWindow(QWidget *parent) :
 
     // Init graph
     this->graph = new QGraph(ui->widget_graph);
-    //this->graph->setNanoamperPerCount(this->kBqPerCount_coarse * 1e-6); // MBq per count!!
-    this->graph->setNanoamperPerCount(1); // raw counts
-    this->graph->resetNoise();
     this->graph->setTAxisRange(0, static_cast<double>(this->tGraphRange));
     this->graph->setYAxisRange(this->yGraphMinRange, this->yGraphMaxRange);
 
@@ -45,7 +42,6 @@ ChamberWindow::ChamberWindow(QWidget *parent) :
     ui->lineEdit_graphHorizontalRange->setText(QString::number(this->tGraphRange));
     ui->lineEdit_cellX->setText(QString::number(this->cellX));
     ui->lineEdit_cellY->setText(QString::number(this->cellY));
-    ui->lineEdit_kNanoamperPerCount->setText(QString::number(this->kNanoAmperPerCount));
     ui->widget_fileMenu->setSession(&this->session);
 
     // start graph button
@@ -53,29 +49,19 @@ ChamberWindow::ChamberWindow(QWidget *parent) :
     this->setStopStyle(ui->pushButton_startGraph);
 
     // value widgets
-    ui->widget_currentActivity->setHeadText("Сигнал ячейки, ед.:");
-    ui->widget_averageActivity->setHeadText("Фон ячейки, ед.:");
-    ui->widget_current->setHeadText("Ток, нА:");
-    ui->widget_noiseCurrent->setHeadText("Фоновый ток, нА:");
+    ui->widget_cell00->setHeadText("(0:0)");
 
     // buttons
     buttonsFont.setFamily("Inter");
     buttonsFont.setPixelSize(15);
     buttonsFont.setWeight(50);
 
-    // buttons
-    ui->pushButton_compensateBG->hide();
-    //ui->pushButton_compensateBG->setFont(buttonsFont);
-    //ui->pushButton_compensateBG->setText("Вычесть фон");
-    ui->pushButton_resetBG->hide();
 
     // check box
     ui->checkBox_noise->setFont(buttonsFont);
     ui->checkBox_noise->setText("Вычесть фон");
 
     // set fonts
-    ui->pushButton_compensateBG->setFont(buttonsFont);
-    ui->pushButton_resetBG->setFont(buttonsFont);
     ui->pushButton_resetScales->setFont(buttonsFont);
     ui->pushButton_startGraph->setFont(buttonsFont);
     ui->label->setFont(buttonsFont);
@@ -83,14 +69,13 @@ ChamberWindow::ChamberWindow(QWidget *parent) :
     ui->label_16->setFont(buttonsFont);
     ui->label_cellX->setFont(buttonsFont);
     ui->label_cellY->setFont(buttonsFont);
-    ui->label_kNanoamperPerCount->setFont(buttonsFont);
     ui->lineEdit_graphHorizontalRange->setFont(buttonsFont);
     ui->lineEdit_graphVerticalMax->setFont(buttonsFont);
     ui->lineEdit_graphVerticalMin->setFont(buttonsFont);
     ui->lineEdit_cellX->setFont(buttonsFont);
     ui->lineEdit_cellY->setFont(buttonsFont);
-    ui->lineEdit_kNanoamperPerCount->setFont(buttonsFont);
 
+    initWidgetValues();
 }
 
 ChamberWindow::~ChamberWindow()
@@ -150,27 +135,33 @@ void ChamberWindow::resizeEvent(QResizeEvent *event)
     show();
 }
 
+#include <iostream>
 void ChamberWindow::update()
 {
     // update message from MCU
     if(this->id < receiver->getMessageID())
     {
         id = receiver->getMessageID();
+
+        //std::cout << "width: " <<  ui->widget_cell00->width() <<
+        //          "\theight: "<< ui->widget_cell00->height() << std::endl;
+        // detectors!!
         int currDoseRate = receiver->getDetectorValue(this->cellX, this->cellY);
 
-        ui->widget_currentActivity->setValueText(QString::number(currDoseRate - this->graph->getNoiseCount()));
-        ui->widget_averageActivity->setValueText(QString::number(this->graph->getNoiseCount()));
-        ui->widget_noiseCurrent->setValueText(QString::number(
-                                                  this->graph->getNoiseCount() * this->kNanoAmperPerCount, 'f', 6)
-                                              );
-        ui->widget_current->setValueText(
-                    QString::number(((currDoseRate - this->graph->getNoiseCount())* this->kNanoAmperPerCount), 'f', 6)
-                    );
+        updateWidgetValues();
+        //ui->widget_cell00->setValueText(QString::number(currDoseRate));
+        //ui->widget_averageActivity->setValueText(QString::number(this->graph->getNoiseCount()));
+        //ui->widget_noiseCurrent->setValueText(QString::number(
+        //                                          this->graph->getNoiseCount() * this->kNanoAmperPerCount, 'f', 6)
+         //                                     );
+        //ui->widget_current->setValueText(
+         //           QString::number(((currDoseRate - this->graph->getNoiseCount())* this->kNanoAmperPerCount), 'f', 6)
+         //           );
 
         // graph update
         if(this->graph)
         {
-            this->graph->QGraph::updateCount(currDoseRate);
+            this->graph->QGraph::update(currDoseRate);
         }
         // file update
         ui->widget_fileMenu->update(id, currDoseRate);
@@ -255,19 +246,6 @@ void ChamberWindow::on_pushButton_resetScales_clicked()
     ui->lineEdit_graphVerticalMin->setText(QString::fromStdString(std::to_string(static_cast<int>(this->yGraphMinRange))));
 }
 
-void ChamberWindow::on_pushButton_compensateBG_clicked()
-{
-    this->graph->updateNoise();
-    /*if(receiver)
-    {
-        this->averageDoseCountSaved = receiver->GetADCAverageValue();
-    } */
-}
-
-void ChamberWindow::on_pushButton_resetBG_clicked()
-{
-    this->graph->resetNoise();
-}
 
 void ChamberWindow::setStartStyle(QPushButton * button)
 {
@@ -320,15 +298,52 @@ void ChamberWindow::setStopStyle(QPushButton * button)
     button->setFocusPolicy( Qt::FocusPolicy::NoFocus );
 }
 
+#include <iostream>
+void ChamberWindow::initWidgetValues()
+{
+    // fill vector
+    widgetValues.clear();
+    widgetValues.push_back(ui->widget_cell00);
+    widgetValues.push_back(ui->widget_cell01);
+    widgetValues.push_back(ui->widget_cell02);
+    widgetValues.push_back(ui->widget_cell03);
+    widgetValues.push_back(ui->widget_cell10);
+    widgetValues.push_back(ui->widget_cell11);
+    widgetValues.push_back(ui->widget_cell12);
+    widgetValues.push_back(ui->widget_cell13);
+    widgetValues.push_back(ui->widget_cell20);
+    widgetValues.push_back(ui->widget_cell21);
+    widgetValues.push_back(ui->widget_cell22);
+    widgetValues.push_back(ui->widget_cell23);
+    widgetValues.push_back(ui->widget_cell30);
+    widgetValues.push_back(ui->widget_cell31);
+    widgetValues.push_back(ui->widget_cell32);
+    widgetValues.push_back(ui->widget_cell33);
+
+
+}
+
+void ChamberWindow::updateWidgetValues()
+{
+    for(int i = 0; i < widgetValues.size(); i++)
+    {
+        widgetValues[i]->setValueText(
+                 QString::number(
+                     receiver->getDetectorValue(0, i)
+                     )
+                                   );
+    }
+}
+
 void ChamberWindow::on_checkBox_noise_clicked()
 {
     if(ui->checkBox_noise->checkState())
     {
-        this->graph->updateNoise();
+        //this->graph->updateNoise();
     }
     else
     {
-        this->graph->resetNoise();
+        //this->graph->resetNoise();
     }
 }
 
@@ -367,17 +382,4 @@ void ChamberWindow::on_lineEdit_cellY_editingFinished()
         ui->lineEdit_cellY->setText(QString::number(this->cellY));
     }
 
-}
-
-void ChamberWindow::on_lineEdit_kNanoamperPerCount_editingFinished()
-{
-    double val = ui->lineEdit_kNanoamperPerCount->text().toDouble();
-    if(val != 0)
-    {
-        this->kNanoAmperPerCount = val;
-    }
-    else
-    {
-        ui->lineEdit_kNanoamperPerCount->setText(QString::number(this->kNanoAmperPerCount));
-    }
 }

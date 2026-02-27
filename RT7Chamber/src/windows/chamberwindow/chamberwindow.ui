@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1469</width>
-    <height>865</height>
+    <width>980</width>
+    <height>885</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -278,38 +278,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_kNanoamperPerCount">
-           <property name="text">
-            <string>k, nA/ед:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_kNanoamperPerCount">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>50</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>70</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>70</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QLabel" name="label_16">
            <property name="text">
             <string>t, с:</string>
@@ -376,6 +344,9 @@
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Preferred</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
@@ -388,56 +359,6 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_10">
-         <item>
-          <widget class="QPushButton" name="pushButton_compensateBG">
-           <property name="minimumSize">
-            <size>
-             <width>130</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>130</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="text">
-            <string>Измерить фон</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_resetBG">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>170</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>170</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="text">
-            <string>Скомпенсировать фон</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <spacer name="horizontalSpacer_9">
            <property name="orientation">
@@ -459,43 +380,89 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
+       <item>
+        <widget class="WidgetFile" name="widget_fileMenu" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>400</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>400</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_widgetsValue">
          <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Minimum</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>300</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,1">
+          <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1">
            <item>
-            <widget class="WidgetFile" name="widget_fileMenu" native="true"/>
-           </item>
-           <item>
-            <layout class="QGridLayout" name="gridLayout">
-             <item row="1" column="1">
-              <widget class="WidgetValue" name="widget_noiseCurrent" native="true"/>
+            <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0">
+             <item row="0" column="3">
+              <widget class="WidgetValue" name="widget_cell33" native="true"/>
              </item>
-             <item row="1" column="0">
-              <widget class="WidgetValue" name="widget_current" native="true"/>
-             </item>
-             <item row="0" column="1">
-              <widget class="WidgetValue" name="widget_averageActivity" native="true"/>
+             <item row="3" column="0">
+              <widget class="WidgetValue" name="widget_cell00" native="true"/>
              </item>
              <item row="0" column="0">
-              <widget class="WidgetValue" name="widget_currentActivity" native="true"/>
+              <widget class="WidgetValue" name="widget_cell30" native="true"/>
+             </item>
+             <item row="2" column="2">
+              <widget class="WidgetValue" name="widget_cell12" native="true"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="WidgetValue" name="widget_cell10" native="true"/>
+             </item>
+             <item row="3" column="1">
+              <widget class="WidgetValue" name="widget_cell01" native="true"/>
+             </item>
+             <item row="2" column="3">
+              <widget class="WidgetValue" name="widget_cell13" native="true"/>
+             </item>
+             <item row="2" column="1">
+              <widget class="WidgetValue" name="widget_cell11" native="true"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="WidgetValue" name="widget_cell20" native="true"/>
+             </item>
+             <item row="1" column="1">
+              <widget class="WidgetValue" name="widget_cell21" native="true"/>
+             </item>
+             <item row="1" column="2">
+              <widget class="WidgetValue" name="widget_cell22" native="true"/>
+             </item>
+             <item row="1" column="3">
+              <widget class="WidgetValue" name="widget_cell23" native="true"/>
+             </item>
+             <item row="0" column="1">
+              <widget class="WidgetValue" name="widget_cell31" native="true"/>
+             </item>
+             <item row="3" column="2">
+              <widget class="WidgetValue" name="widget_cell02" native="true"/>
+             </item>
+             <item row="3" column="3">
+              <widget class="WidgetValue" name="widget_cell03" native="true"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="WidgetValue" name="widget_cell32" native="true"/>
              </item>
             </layout>
            </item>
@@ -509,12 +476,12 @@
           <enum>Qt::Vertical</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::Minimum</enum>
+          <enum>QSizePolicy::Expanding</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>260</height>
+           <height>200</height>
           </size>
          </property>
         </spacer>

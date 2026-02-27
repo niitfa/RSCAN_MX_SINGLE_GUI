@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>877</width>
-    <height>339</height>
+    <width>271</width>
+    <height>183</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,23 +39,10 @@
          <property name="text">
           <string>Description, unit:</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
         </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>30</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </item>
@@ -66,6 +53,9 @@
          <property name="text">
           <string>value</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
         </widget>
        </item>
        <item>
@@ -75,7 +65,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>20</width>
+           <width>0</width>
            <height>40</height>
           </size>
          </property>
@@ -106,8 +96,8 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
-         <height>10</height>
+         <width>20</width>
+         <height>5</height>
         </size>
        </property>
       </spacer>

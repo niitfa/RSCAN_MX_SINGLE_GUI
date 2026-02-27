@@ -9,6 +9,7 @@
 #include "qgraph.h"
 #include "rscanmxdev2receiver.h"
 #include "scansessionfile.h"
+#include "widgetvalue.h"
 
 namespace Ui {
 class ChamberWindow;
@@ -39,21 +40,17 @@ private slots:
     void on_lineEdit_graphVerticalMax_editingFinished();
 
     void on_pushButton_resetScales_clicked();
-
-    void on_pushButton_compensateBG_clicked();
-
-    void on_pushButton_resetBG_clicked();
     void on_checkBox_noise_clicked();
 
     void on_lineEdit_cellX_editingFinished();
 
     void on_lineEdit_cellY_editingFinished();
-
-    void on_lineEdit_kNanoamperPerCount_editingFinished();
-
 private:
     void setStartStyle(QPushButton*);
     void setStopStyle(QPushButton*);
+
+    void initWidgetValues();
+    void updateWidgetValues();
 private:
 
     RSCANMXDev2Receiver* receiver = nullptr;
@@ -74,10 +71,6 @@ private:
     double kSense = 1;
     double kBqPerCount_fine = kBqPerCount_coarse / kSense;
     double kBqPerCountCurrent = kBqPerCount_coarse;
-    int prevRange = 2; // nor 0 not 1
-
-    // nA per count
-    double kNanoAmperPerCount = 4e-8;
 
     // Matrix!!
     int cellX = 0;
@@ -94,6 +87,9 @@ private:
 
     // average activity
     int averageDoseCountSaved = 0;
+
+    // Widgets value
+    QVector<WidgetValue*> widgetValues;
 private:
     void closeEvent(QCloseEvent *event) override;
     void resizeEvent(QResizeEvent *) override;

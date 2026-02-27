@@ -13,11 +13,11 @@ WidgetValue::WidgetValue(QWidget *parent) :
     QFont headFont;
     headFont.setFamily("Inter");
     headFont.setPixelSize(16);
-    headFont.setWeight(55);
+    headFont.setWeight(40);
 
     QFont valueFont;
     valueFont.setFamily("Inter");
-    valueFont.setPixelSize(40); // 28
+    valueFont.setPixelSize(25); // 28
     valueFont.setWeight(60);
 
     // border
@@ -46,6 +46,8 @@ WidgetValue::WidgetValue(QWidget *parent) :
                 "border-width:0px;" +
                 colorText
                 );
+
+    ui->label_head->hide();
 }
 
 WidgetValue::~WidgetValue()

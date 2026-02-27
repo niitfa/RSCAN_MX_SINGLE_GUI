@@ -1,12 +1,14 @@
 #include "widgetfile.h"
 #include "ui_widgetfile.h"
 
+// todo
+// 1. session.update();
+
 WidgetFile::WidgetFile(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::WidgetFile)
 {
     ui->setupUi(this);
-
 
     // internal frame voltage value
     ui->frame_borderInternal->setStyleSheet(
@@ -183,7 +185,7 @@ void WidgetFile::update(int id, int value)
         this->pointIndex = id / this->fileUpdatePeriod;
         if(this->session)
         {
-            this->session->update({id, value});
+            //this->session->update({id, value});
         }
     }
 }
