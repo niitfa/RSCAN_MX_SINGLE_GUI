@@ -48,9 +48,6 @@ ChamberWindow::ChamberWindow(QWidget *parent) :
     this->graphStarted = 1;
     this->setStopStyle(ui->pushButton_startGraph);
 
-    // value widgets
-    ui->widget_cell00->setHeadText("(0:0)");
-
     // buttons
     buttonsFont.setFamily("Inter");
     buttonsFont.setPixelSize(15);
@@ -60,6 +57,9 @@ ChamberWindow::ChamberWindow(QWidget *parent) :
     // check box
     ui->checkBox_noise->setFont(buttonsFont);
     ui->checkBox_noise->setText("Вычесть фон");
+
+    ui->checkBox_allGraphs->setFont(buttonsFont);
+    ui->checkBox_allGraphs->setText("Выбрать все");
 
     // set fonts
     ui->pushButton_resetScales->setFont(buttonsFont);
@@ -120,7 +120,6 @@ void ChamberWindow::show()
     {
         timer->start();
     }
-
 }
 
 void ChamberWindow::closeEvent(QCloseEvent *event)
@@ -143,27 +142,22 @@ void ChamberWindow::update()
     {
         id = receiver->getMessageID();
 
-        //std::cout << "width: " <<  ui->widget_cell00->width() <<
-        //          "\theight: "<< ui->widget_cell00->height() << std::endl;
-        // detectors!!
-        int currDoseRate = receiver->getDetectorValue(this->cellX, this->cellY);
-
         updateWidgetValues();
-        //ui->widget_cell00->setValueText(QString::number(currDoseRate));
-        //ui->widget_averageActivity->setValueText(QString::number(this->graph->getNoiseCount()));
-        //ui->widget_noiseCurrent->setValueText(QString::number(
-        //                                          this->graph->getNoiseCount() * this->kNanoAmperPerCount, 'f', 6)
-         //                                     );
-        //ui->widget_current->setValueText(
-         //           QString::number(((currDoseRate - this->graph->getNoiseCount())* this->kNanoAmperPerCount), 'f', 6)
-         //           );
 
         // graph update
+        QVector<double> vecCells;
+        for(int i = 0; i < QGraph::numberOfGraphs; i++)
+        {
+            vecCells.push_back(receiver->getDetectorValue(0, i));
+        }
+
         if(this->graph)
         {
-            this->graph->QGraph::update(currDoseRate);
+            this->graph->QGraph::update(vecCells);
         }
+
         // file update
+        int currDoseRate = receiver->getDetectorValue(this->cellX, this->cellY);
         ui->widget_fileMenu->update(id, currDoseRate);
     }
 }
@@ -320,7 +314,15 @@ void ChamberWindow::initWidgetValues()
     widgetValues.push_back(ui->widget_cell32);
     widgetValues.push_back(ui->widget_cell33);
 
-
+    // pass graph pointer
+    for(int i = 0; i < widgetValues.size(); i++)
+    {
+        if(widgetValues[i])
+        {
+            widgetValues[i]->setGraph(this->graph, i);
+            widgetValues[i]->setChecked(false);
+        }
+    }
 }
 
 void ChamberWindow::updateWidgetValues()
@@ -382,4 +384,22 @@ void ChamberWindow::on_lineEdit_cellY_editingFinished()
         ui->lineEdit_cellY->setText(QString::number(this->cellY));
     }
 
+}
+
+void ChamberWindow::on_checkBox_allGraphs_clicked()
+{
+    if(ui->checkBox_allGraphs->checkState() == Qt::CheckState::Checked)
+    {
+        for (auto w : this->widgetValues)
+        {
+            w->setChecked(true);
+        }
+    }
+    else if(ui->checkBox_allGraphs->checkState() == Qt::CheckState::Unchecked)
+    {
+        for (auto w : this->widgetValues)
+        {
+            w->setChecked(false);
+        }
+    }
 }

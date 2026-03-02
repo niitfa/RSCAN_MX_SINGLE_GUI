@@ -19,39 +19,35 @@ public:
     explicit QGraph(QWidget *parent = nullptr);
     ~QGraph();
 
-    //void setNanoamperPerCount(double);
-    //double getNanoamperPerCount();
-
-    //void setNanoamperPerCount(double);
-    //double getNanoamperPerCount();
-
-    //void updateNoise();
-    //void resetNoise();
-    //int getNoiseCount();
-    double back();
-
+    QVector<double> back();
     void setYAxisRange(double yMix, double yMax);
     void setTAxisRange(double tMin, double tMax);
-
     void show();
-    void update(double val);
+    void update(QVector<double> data);
     void resizeYAxis();
     void setEnabled(bool);
     double getTimeRange();
     double getYMax();
     double getYMin();
+
+    void showGraph(int index);
+    void hideGraph(int index);
+    void showAllGraphs();
+    void hideAllGraphs();
+
+    static const int numberOfGraphs = 16;
 private:
+    QVector<QCPPlottableLegendItem> savedLegendItems;
+
     Ui::QGraph *ui;
     QTime timer;
     bool enabled = true;
 
-    // MBq per count
-
-    QVector<double> yVec;
+    QVector<QVector<double>> yVec;
     QVector<double> tVec;
 
     // t axis
-    double tFilled = 0.75; // (0, 1]
+    double tFilled = 0.85; // (0, 1]
     double tMin = 0;
     double tMax = 1;
 
@@ -66,6 +62,16 @@ private:
     void removeGraph();
     void replot();
     void clearGraph();
+
+    // vector op
+    void yVecPushBack(const QVector<double>&);
+    void yVecPopFront();
+    void yVecClear();
+
+    // legend
+    void updateLegend();
+
+
 private slots:
     void showPointToolTip(QMouseEvent*);
 };

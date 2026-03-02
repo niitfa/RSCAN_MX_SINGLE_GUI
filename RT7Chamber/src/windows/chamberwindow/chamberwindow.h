@@ -45,6 +45,8 @@ private slots:
     void on_lineEdit_cellX_editingFinished();
 
     void on_lineEdit_cellY_editingFinished();
+    void on_checkBox_allGraphs_clicked();
+
 private:
     void setStartStyle(QPushButton*);
     void setStopStyle(QPushButton*);

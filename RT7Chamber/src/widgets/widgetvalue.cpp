@@ -46,8 +46,6 @@ WidgetValue::WidgetValue(QWidget *parent) :
                 "border-width:0px;" +
                 colorText
                 );
-
-    ui->label_head->hide();
 }
 
 WidgetValue::~WidgetValue()
@@ -63,4 +61,34 @@ void WidgetValue::setHeadText(QString qstr)
 void WidgetValue::setValueText(QString qstr)
 {
     ui->label_value->setText(qstr);
+}
+
+void WidgetValue::setGraph(QGraph *qgraph, int index)
+{
+    this->qgraph = qgraph;
+    this->graphIndex = index;
+   // setHeadText(QString::number(index / this->lineLength) + ":" + QString::number(index % this->lineLength));
+    QCPGraph* g = qgraph->graph(index);
+    if(g)
+    {
+        setHeadText(g->name());
+    }
+}
+
+void WidgetValue::setChecked(bool checked)
+{
+    ui->checkBox->setChecked(checked);
+    on_checkBox_clicked();
+}
+
+void WidgetValue::on_checkBox_clicked()
+{
+    if(ui->checkBox->checkState() == Qt::CheckState::Checked)
+    {
+        if(this->qgraph) { qgraph->showGraph(this->graphIndex); }
+    }
+    else if (ui->checkBox->checkState() == Qt::CheckState::Unchecked)
+    {
+        if(this->qgraph) { qgraph->hideGraph(this->graphIndex); }
+    }
 }

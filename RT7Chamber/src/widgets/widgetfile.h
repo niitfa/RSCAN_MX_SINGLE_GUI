@@ -32,7 +32,7 @@ private:
     bool started = 0;
     Ui::WidgetFile *ui;
     QFont buttonsFont;
-    int fileUpdatePeriod = 1200;
+    int fileUpdatePeriod = 1;
     int pointIndex = 0;
     ScanSessionFile* session = nullptr;
 };
