@@ -40,8 +40,6 @@ ChamberWindow::ChamberWindow(QWidget *parent) :
     ui->lineEdit_graphVerticalMax->setText(QString::number(this->yGraphMaxRange));
     ui->lineEdit_graphVerticalMin->setText(QString::number(this->yGraphMinRange));
     ui->lineEdit_graphHorizontalRange->setText(QString::number(this->tGraphRange));
-    ui->lineEdit_cellX->setText(QString::number(this->cellX));
-    ui->lineEdit_cellY->setText(QString::number(this->cellY));
     ui->widget_fileMenu->setSession(&this->session);
 
     // start graph button
@@ -53,11 +51,6 @@ ChamberWindow::ChamberWindow(QWidget *parent) :
     buttonsFont.setPixelSize(15);
     buttonsFont.setWeight(50);
 
-
-    // check box
-    ui->checkBox_noise->setFont(buttonsFont);
-    ui->checkBox_noise->setText("Вычесть фон");
-
     ui->checkBox_allGraphs->setFont(buttonsFont);
     ui->checkBox_allGraphs->setText("Выбрать все");
 
@@ -67,13 +60,11 @@ ChamberWindow::ChamberWindow(QWidget *parent) :
     ui->label->setFont(buttonsFont);
     ui->label_2->setFont(buttonsFont);
     ui->label_16->setFont(buttonsFont);
-    ui->label_cellX->setFont(buttonsFont);
-    ui->label_cellY->setFont(buttonsFont);
     ui->lineEdit_graphHorizontalRange->setFont(buttonsFont);
     ui->lineEdit_graphVerticalMax->setFont(buttonsFont);
     ui->lineEdit_graphVerticalMin->setFont(buttonsFont);
-    ui->lineEdit_cellX->setFont(buttonsFont);
-    ui->lineEdit_cellY->setFont(buttonsFont);
+
+    this->vecCells = QVector<double>(this->graph->numberOfGraphs);
 
     initWidgetValues();
 }
@@ -145,20 +136,18 @@ void ChamberWindow::update()
         updateWidgetValues();
 
         // graph update
-        QVector<double> vecCells;
         for(int i = 0; i < QGraph::numberOfGraphs; i++)
         {
-            vecCells.push_back(receiver->getDetectorValue(0, i));
+            this->vecCells[i] = receiver->getDetectorValue(0, i);
         }
 
         if(this->graph)
         {
-            this->graph->QGraph::update(vecCells);
+            this->graph->QGraph::update(this->vecCells);
         }
 
         // file update
-        int currDoseRate = receiver->getDetectorValue(this->cellX, this->cellY);
-        ui->widget_fileMenu->update(id, currDoseRate);
+        ui->widget_fileMenu->update(id, 0);
     }
 }
 
@@ -188,7 +177,7 @@ void ChamberWindow::on_lineEdit_graphHorizontalRange_editingFinished()
     double tRange = ui->lineEdit_graphHorizontalRange->text().toDouble();
     if(tRange > 0)
     {
-        this->graph->setEnabled(false);
+        //this->graph->setEnabled(false);
         this->graph->setTAxisRange(0, tRange);
     }
     else
@@ -335,55 +324,6 @@ void ChamberWindow::updateWidgetValues()
                      )
                                    );
     }
-}
-
-void ChamberWindow::on_checkBox_noise_clicked()
-{
-    if(ui->checkBox_noise->checkState())
-    {
-        //this->graph->updateNoise();
-    }
-    else
-    {
-        //this->graph->resetNoise();
-    }
-}
-
-void ChamberWindow::on_lineEdit_cellX_editingFinished()
-{
-    int num = ui->lineEdit_cellX->text().toInt();
-    if(num > 0 || num < RSCANMXDev2Receiver::kLineLength)
-    {
-        this->cellX = num;
-    }
-    else if(num == 0)
-    {
-        this->cellX = num;
-        ui->lineEdit_cellX->setText(QString::number(num));
-    }
-    else
-    {
-        ui->lineEdit_cellX->setText(QString::number(this->cellX));
-    }
-}
-
-void ChamberWindow::on_lineEdit_cellY_editingFinished()
-{
-    int num = ui->lineEdit_cellY->text().toInt();
-    if(num > 0 || num < RSCANMXDev2Receiver::kNumberOfLines)
-    {
-        this->cellY = num;
-    }
-    else if(num == 0)
-    {
-        this->cellY = num;
-        ui->lineEdit_cellY->setText(QString::number(num));
-    }
-    else
-    {
-        ui->lineEdit_cellY->setText(QString::number(this->cellY));
-    }
-
 }
 
 void ChamberWindow::on_checkBox_allGraphs_clicked()

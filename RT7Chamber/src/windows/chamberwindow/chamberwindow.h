@@ -40,11 +40,7 @@ private slots:
     void on_lineEdit_graphVerticalMax_editingFinished();
 
     void on_pushButton_resetScales_clicked();
-    void on_checkBox_noise_clicked();
 
-    void on_lineEdit_cellX_editingFinished();
-
-    void on_lineEdit_cellY_editingFinished();
     void on_checkBox_allGraphs_clicked();
 
 private:
@@ -67,16 +63,13 @@ private:
     double yGraphMinRange = -5000;
     double tGraphRange = 20;
     const int maxVoltage = 500;
+    QVector<double> vecCells;
 
     // MBq per count
     double kBqPerCount_coarse = 13000;
     double kSense = 1;
     double kBqPerCount_fine = kBqPerCount_coarse / kSense;
     double kBqPerCountCurrent = kBqPerCount_coarse;
-
-    // Matrix!!
-    int cellX = 0;
-    int cellY = 0;
 
     // write to file
     ScanSessionFile session;

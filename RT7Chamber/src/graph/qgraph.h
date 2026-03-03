@@ -6,6 +6,8 @@
 #include <QVector>
 #include <QTime>
 #include "qcustomplot.h"
+#include <thread>
+#include "graphdataupdater.h"
 
 namespace Ui {
 class QGraph;
@@ -23,7 +25,7 @@ public:
     void setYAxisRange(double yMix, double yMax);
     void setTAxisRange(double tMin, double tMax);
     void show();
-    void update(QVector<double> data);
+    void update(const QVector<double>& data);
     void resizeYAxis();
     void setEnabled(bool);
     double getTimeRange();
@@ -45,6 +47,7 @@ private:
 
     QVector<QVector<double>> yVec;
     QVector<double> tVec;
+    GraphDataUpdater* dataUpdater = nullptr;
 
     // t axis
     double tFilled = 0.85; // (0, 1]
@@ -71,7 +74,7 @@ private:
     // legend
     void updateLegend();
 
-
+    // thread
 private slots:
     void showPointToolTip(QMouseEvent*);
 };

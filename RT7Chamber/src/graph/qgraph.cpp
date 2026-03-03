@@ -13,16 +13,15 @@ QGraph::QGraph(QWidget *parent) :
     this->setupGraph();
 
     // init data
-    for(int i = 0; i < numberOfGraphs; i++)
-    {
-        this->yVec.push_back(QVector<double>());
-    }
+    this->yVec = QVector<QVector<double>>(numberOfGraphs);
+    this->dataUpdater = new GraphDataUpdater(&this->yVec);
 
     this->QCustomPlot::legend->setVisible(true);
 }
 
 QGraph::~QGraph()
 {
+    delete dataUpdater;
     delete ui;
 }
 
@@ -50,29 +49,34 @@ void QGraph::show()
     this->QCustomPlot::show();
 }
 
-void QGraph::update(QVector<double> data)
+void QGraph::update(const QVector<double>& data)
 {
     if(this->enabled)
     {
-        //std::cout << graphCount() << std::endl;
         // get current timе
         int msecs_elapsed = timer.restart();
         double secs_elapsed = static_cast<double>(msecs_elapsed) / 1000;
 
+        std::cout << "elapsed: " << msecs_elapsed << std::endl;
+
         this->updateTimeVector(secs_elapsed);
-        //this->yVec.push_back(data);
-        yVecPushBack(data);
+
+        // thread
+        if(this->dataUpdater) { dataUpdater->push(data); }
+        //this->yVecPushBack(data);
 
         while(this->isLimitTimeExceeded())
         {
             tMin += secs_elapsed;
             tMax += secs_elapsed;
             this->tVec.pop_front();
-            //this->yVec.pop_front();
-            yVecPopFront();
+
+            // thread
+            if(this->dataUpdater) { dataUpdater->pop(); }
+            //this->yVecPopFront();
+
             this->setTAxisRange(tMin, tMax);
         }
-
         this->QGraph::replot();
     }
 }
@@ -175,7 +179,7 @@ void QGraph::setupGraph()
                     QColor(0x9A, 0xCD, 0x32), // 2:2
                     QColor(0x00, 0x80, 0x80), // 2:3
 
-                    QColor(0xE6, 0xE6, 0xFA), // 3:0
+                    QColor(0x00, 0x00, 0xFF), // 3:0
                     QColor(0xC0, 0xC0, 0xC0), // 3:1
                     QColor(0x69, 0x69, 0x69), // 3:2
                     QColor(0x10, 0x10, 0x10), // 3:3
@@ -186,7 +190,7 @@ void QGraph::setupGraph()
     {
         this->QCustomPlot::addGraph();
         pen.setColor(colors[i]);
-        pen.setWidth(3);
+        pen.setWidth(1);
         this->QCustomPlot::graph(i)->setPen(pen);
         this->QCustomPlot::graph(i)->setName(
                     QString::number(i / 4) + ":" + QString::number(i % 4)
@@ -228,7 +232,7 @@ void QGraph::yVecPushBack(const QVector<double>& data)
     {
         if(i < data.size())
         {
-            yVec[i].push_back(data[i]);
+            yVec[i].push_back(data.at(i));
         }
         else
         {
