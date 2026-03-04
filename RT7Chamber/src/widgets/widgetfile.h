@@ -18,7 +18,8 @@ public:
     explicit WidgetFile(QWidget *parent = nullptr);
     ~WidgetFile();
     void setSession(ScanSessionFile*);
-    void update(int id, int value);
+    ScanSessionFile *getSession();
+    void update(uint32_t id);
 
 private slots:
     void on_lineEdit_periodInput_editingFinished();
@@ -32,9 +33,10 @@ private:
     bool started = 0;
     Ui::WidgetFile *ui;
     QFont buttonsFont;
-    int fileUpdatePeriod = 1;
-    int pointIndex = 0;
+    uint32_t fileUpdatePeriod = 1;
+    uint32_t pointIndex = 0;
     ScanSessionFile* session = nullptr;
+    QString defaultFilename = "session";
 };
 
 #endif // WIDGETFILE_H

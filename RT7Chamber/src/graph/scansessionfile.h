@@ -6,50 +6,37 @@
 #include <QDir>
 #include <QTime>
 #include <QDate>
+#include <QVector>
 
 class ScanSessionFile
 {
     QString filepath;
     QFile* file = nullptr;
 
-    // special - title
-    double BqPerCount   = 1;
-    double noiseMBq     = 0;
-
     // special - regular
-    int         id                      = 0;
-    int         rawActivityCount        = 0;
-    double      rawActivityMBq          = 0;
-    double      noiselessActivityMBq    = 0;
-    uint8_t     sensitivity             = 0;
-    uint16_t    voltage                 = 0;
-    uint8_t     voltagePolarity         = 0;
-    double      pressureAt              = 0;
+    uint32_t  id = 0;
 
-    QString filename = "rwell";
+    // other
+    QString filename = "rscan_mx";
+    QVector<uint16_t> vec = QVector<uint16_t>(vecSize);
+
 public:
     ScanSessionFile();
     ~ScanSessionFile();
+
+    static const int vecSize = 16;
+    static const int mxLineLength = 4;
 
     bool start();
     void update();
     void stop();
 
     void setFilename(QString);
-
+    void setData(int index, uint16_t data);
     // title
-    void setBqPerCount(double BqPerCount);
-    void setNoiseMBq(double noiseMBq);
 
     // regular
-    void setID(int id);
-    void setRawActivityCount(int cnt);
-    void setRawActivityMBq(double MBq);
-    void setNoiselessActivityMBq(double MBq);
-    void setSensitivity(uint8_t sensitivity);
-    void setVoltage(uint16_t voltage);
-    void setVoltagePolarity(uint8_t polarity);
-    void setPressure(double pressureAt);
+    void setID(uint32_t id);
 
 private:
     QString getFolderPath();

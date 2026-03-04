@@ -56,9 +56,6 @@ void QGraph::update(const QVector<double>& data)
         // get current timе
         int msecs_elapsed = timer.restart();
         double secs_elapsed = static_cast<double>(msecs_elapsed) / 1000;
-
-        std::cout << "elapsed: " << msecs_elapsed << std::endl;
-
         this->updateTimeVector(secs_elapsed);
 
         // thread

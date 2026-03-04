@@ -55,21 +55,14 @@ private:
     Ui::ChamberWindow *ui;
     QTimer* timer = nullptr;
 
-    int id = 0;
+    uint32_t id = 0;
 
     // Graph
     QGraph* graph = nullptr;
     double yGraphMaxRange = 70000; // was 9000000
     double yGraphMinRange = -5000;
     double tGraphRange = 20;
-    const int maxVoltage = 500;
     QVector<double> vecCells;
-
-    // MBq per count
-    double kBqPerCount_coarse = 13000;
-    double kSense = 1;
-    double kBqPerCount_fine = kBqPerCount_coarse / kSense;
-    double kBqPerCountCurrent = kBqPerCount_coarse;
 
     // write to file
     ScanSessionFile session;
@@ -80,14 +73,12 @@ private:
     // font
     QFont buttonsFont;
 
-    // average activity
-    int averageDoseCountSaved = 0;
-
     // Widgets value
     QVector<WidgetValue*> widgetValues;
 private:
     void closeEvent(QCloseEvent *event) override;
     void resizeEvent(QResizeEvent *) override;
+    void logFileUpdate();
 };
 
 #endif // CHAMBERWINDOW_H

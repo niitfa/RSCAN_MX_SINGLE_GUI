@@ -58,63 +58,24 @@ void ScanSessionFile::setFilename(QString filename)
     this->filename = filename;
 }
 
-void ScanSessionFile::setBqPerCount(double BqPerCount)
+void ScanSessionFile::setData(int index, uint16_t data)
 {
-    this->BqPerCount = BqPerCount;
+    if(index >= 0 && index < this->vecSize)
+    {
+        this->vec[index] = data;
+    }
 }
 
-void ScanSessionFile::setNoiseMBq(double noiseMBq)
-{
-    this->noiseMBq = noiseMBq;
-}
-
-void ScanSessionFile::setID(int id)
+void ScanSessionFile::setID(uint32_t id)
 {
     this->id = id;
-}
-
-void ScanSessionFile::setRawActivityCount(int cnt)
-{
-    this->rawActivityCount = cnt;
-}
-
-void ScanSessionFile::setRawActivityMBq(double MBq)
-{
-    this->rawActivityMBq = MBq;
-}
-
-void ScanSessionFile::setNoiselessActivityMBq(double MBq)
-{
-    this->noiselessActivityMBq = MBq;
-}
-
-void ScanSessionFile::setSensitivity(uint8_t sensitivity)
-{
-    this->sensitivity = sensitivity;
-}
-
-void ScanSessionFile::setVoltage(uint16_t voltage)
-{
-    this->voltage = voltage;
-}
-
-void ScanSessionFile::setVoltagePolarity(uint8_t polarity)
-{
-    this->voltagePolarity = polarity;
-}
-
-void ScanSessionFile::setPressure(double pressureAt)
-{
-    this->pressureAt = pressureAt;
 }
 
 // private
 QString ScanSessionFile::getFolderPath()
 {
     QString path = QDir::currentPath();
-    //while(!path.endsWith('/')) { path.chop(1); }
-    //path += "/RWELL_SESSIONS/" + this->createCurrentTimeStr() + "/";
-    path += "/RWELL_SESSIONS/" + this->createCurrentTimeStr() + "/";
+    path += "/RSCAN_MX_SESSIONS/" + this->createCurrentTimeStr() + "_" + filename + "/";
     return path;
 }
 
@@ -166,10 +127,7 @@ void ScanSessionFile::printHeadText(QFile* f)
     QTextStream stream(f);
     stream << "Date," <<  getDateStringFile() << endl;
     stream << "Time," <<  getTimeStringFile() << endl;
-    stream << "Background (MBq)," <<  QString::number(noiseMBq) << endl;
-    stream << "Voltage (V)," <<  QString::number(voltage) << endl;
-    stream << "Polarity," <<  (voltagePolarity ? "+" : "-") << endl;
-    stream << "Sensitivity," <<  (sensitivity ? "low" : "high") << endl;
+    stream << "Size," <<  this->vecSize << endl;
     stream << endl;
 
 }
@@ -177,34 +135,32 @@ void ScanSessionFile::printHeadText(QFile* f)
 void ScanSessionFile::printValuesDescription(QFile *f)
 {
     QTextStream stream(f);
-    stream <<
-            "Time," <<
-            "Date," <<
-            "ID," <<
-            "Activity (count)," <<
-            "Activity (MBq)," <<
-            "Activity no BG (MBq)," <<
-            "Voltage (V)," <<
-            "Pressure (at)," <<
-            "Polarity," <<
-            "Sensitivity" << endl;
+    stream << "Time," << "Date," << "ID,";
+
+    for(int i = 0; i < this->vecSize; i++)
+    {
+        stream << QString::number(i / mxLineLength) + ":" +
+                  QString::number(i % mxLineLength) + ",";
+    }
+    stream << endl;
 }
 
 void ScanSessionFile::printReqularData(QFile *f)
 {
     QTextStream stream(f);
+
     // заполнение строки
     stream <<
               getTimeStringFile() << "," <<
               getDateStringFile() << "," <<
-              QString::number(id) << "," <<
-              QString::number(rawActivityCount) << "," <<
-              QString::number(rawActivityMBq, 'f', 2) << "," <<
-              QString::number(noiselessActivityMBq, 'f', 2) << "," <<
-              QString::number(voltage) << "," <<
-              QString::number(pressureAt, 'f', 2) << "," <<
-              (voltagePolarity ? "+" : "-") << "," <<
-              (sensitivity ? "low" : "high") << endl;
+              QString::number(id) << ",";
+
+    for(int i = 0; i < this->vecSize; i++)
+    {
+        stream << QString::number(this->vec.at(i)) + ",";
+    }
+
+    stream << endl;
 }
 
 QString ScanSessionFile::getTimeStringFile()

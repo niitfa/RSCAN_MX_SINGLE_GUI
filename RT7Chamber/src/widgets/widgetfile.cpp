@@ -1,14 +1,12 @@
 #include "widgetfile.h"
 #include "ui_widgetfile.h"
 
-// todo
-// 1. session.update();
-
 WidgetFile::WidgetFile(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::WidgetFile)
 {
     ui->setupUi(this);
+
 
     // internal frame voltage value
     ui->frame_borderInternal->setStyleSheet(
@@ -71,9 +69,28 @@ WidgetFile::WidgetFile(QWidget *parent) :
     ui->label_period->setFont(buttonsFont);
     ui->label_period->setText("Период:");
 
-    // line edit
+    // label filename
+    ui->label_filename->setStyleSheet(
+                "border-width:0px;" +
+                headTextColor
+                );
+    ui->label_filename->setFont(buttonsFont);
+    ui->label_filename->setText("Имя файла:");
+
+    // label csv
+    ui->label_csv->setStyleSheet(
+                "border-width:0px;" +
+                headTextColor
+                );
+    ui->label_csv->setFont(buttonsFont);
+    ui->label_csv->setText(".csv");
+
+    // line edit period
     ui->lineEdit_periodInput->setFont(buttonsFont);
     ui->lineEdit_periodInput->setText(QString::number(this->fileUpdatePeriod));
+
+    // line edit filename
+    ui->lineEdit_filename->setText(this->defaultFilename);
 
     // button
     this->setStartStyle(ui->pushButton_start);
@@ -87,6 +104,11 @@ WidgetFile::~WidgetFile()
 void WidgetFile::setSession(ScanSessionFile *session)
 {
     this->session = session;
+}
+
+ScanSessionFile *WidgetFile::getSession()
+{
+    return this->session;
 }
 
 void WidgetFile::on_lineEdit_periodInput_editingFinished()
@@ -161,31 +183,46 @@ void WidgetFile::on_pushButton_start_clicked()
         if(this->started)
         {
             ui->lineEdit_periodInput->setEnabled(1);
+            ui->lineEdit_filename->setEnabled(1);
             setStartStyle(ui->pushButton_start);
             session->stop();
             this->started = 0;
         }
         else
         {
-            ui->lineEdit_periodInput->setDisabled(1);
-            setStopStyle(ui->pushButton_start);
+            // set filename
+            if(ui->lineEdit_filename->text().isEmpty())
+            {
+                session->setFilename(this->defaultFilename);
+                ui->lineEdit_filename->setText(this->defaultFilename);
+            }
+            {
+                session->setFilename(ui->lineEdit_filename->text());
+            }
+
+            // start
             if(session->start())
             {
-                this->pointIndex = 0; // reset points counter
+                this->pointIndex = 0;
                 this->started = 1;
+
+                ui->lineEdit_periodInput->setDisabled(1);
+                ui->lineEdit_filename->setDisabled(1);
+                setStopStyle(ui->pushButton_start);
             }
         }
     }
 }
 
-void WidgetFile::update(int id, int value)
+void WidgetFile::update(uint32_t id)
 {
     if(this->pointIndex < (id / this->fileUpdatePeriod))
     {
         this->pointIndex = id / this->fileUpdatePeriod;
         if(this->session)
         {
-            //this->session->update({id, value});
+            this->session->setID(id);
+            this->session->update();
         }
     }
 }

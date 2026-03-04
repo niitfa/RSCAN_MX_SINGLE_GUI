@@ -125,7 +125,15 @@ void ChamberWindow::resizeEvent(QResizeEvent *event)
     show();
 }
 
-#include <iostream>
+void ChamberWindow::logFileUpdate()
+{
+    for(int i = 0; i < session.vecSize; i++)
+    {
+        session.setData(i, receiver->getDetectorValue(0, i));
+    }
+    ui->widget_fileMenu->update(id);
+}
+
 void ChamberWindow::update()
 {
     // update message from MCU
@@ -147,7 +155,7 @@ void ChamberWindow::update()
         }
 
         // file update
-        ui->widget_fileMenu->update(id, 0);
+        this->logFileUpdate();
     }
 }
 
